@@ -1,0 +1,435 @@
+<!--Grid based Whack a mole-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+
+
+<!--Start styles for the game-->
+<style>
+body
+{
+font-family:arial;
+}
+.container /*This the whole game container*/
+{
+width:490px;
+position:relative;
+z-index:0;
+margin:0 auto;
+}
+.main-game-space  /*This the grid element*/
+{
+width:490px;
+position:relative;
+z-index:5;
+margin:0 auto;
+background-image:url(lawn.png);
+height:490px;
+}
+.score
+{
+height:30px;
+font:Verdana,
+font-size:14px;
+line-height:1.45em;
+font-weight:normal;
+font-style:normal;
+}
+#my-timer
+{
+width: 200px; 
+text-align: center; 
+padding:5px 0px 5px 0px;
+}
+.row /*This the element that contains elements (cells) present in a given row*/
+{
+width:490px;
+height:120px;
+position:relative;
+z-index:10;
+border-color:#333;
+border-width:1px;
+}
+.sq-color /*This is the class for all the elements (cells) present in the grid */
+{
+margin: 30px;
+position:relative;
+z-index:20;
+width:60px;
+height:60px;
+float:right;
+/*background-color:#6C0;*/
+background-image:url(pit.png);
+}
+.mole /*This is the class that would be added to one of the randomly picked classes (cells) present in the grid */
+{
+
+position:relative;
+z-index:40000;
+width:60px;
+height:60px;
+background-image:url(mole-up1.png);
+}
+#blocker1 /*This is the class that would be added to one of the randomly picked classes (cells) present in the grid */
+{
+position:absolute;
+top:86px;
+left:463px;
+width:490px;
+height:490px;
+background-color:#FFFF66;
+}
+#blocker2 /*This is the class that would be added to one of the randomly picked classes (cells) present in the grid */
+{
+position:absolute;
+top:86px;
+left:463px;
+width:490px;
+height:490px;
+background-color:#FFFF66;
+}
+#newgame
+{
+position:relative;
+width:130px;
+height:50px;
+background-color:#eeccff;
+display:block;
+text-align:center;
+margin-top:5px;
+font-size:15px;
+}
+</style>
+
+<!--End styles for the game-->
+
+
+
+
+
+
+
+<!--Start of script for the game-->
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+ <script src="scripts/jquery.spritely-0.6.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+ //start main code
+
+var html5_audiotypes={ //define list of audio file extensions and their associated audio types. Add to it if your specified audio file isn't on this list:
+  "mp3": "audio/mpeg",
+	"mp4": "audio/mp4",
+	"ogg": "audio/ogg",
+	"wav": "audio/wav"
+}
+var updateTime; 
+function createsoundbite(sound){
+	var html5audio=document.createElement('audio')
+	if (html5audio.canPlayType){ //check support for HTML5 audio
+		for (var i=0; i<arguments.length; i++){
+			var sourceel=document.createElement('source')
+			sourceel.setAttribute('src', arguments[i])
+			if (arguments[i].match(/\.(\w+)$/i))
+				sourceel.setAttribute('type', html5_audiotypes[RegExp.$1])
+			html5audio.appendChild(sourceel)
+		}
+		html5audio.load()
+		html5audio.playclip=function(){
+			html5audio.pause()
+			html5audio.currentTime=0
+			html5audio.play()
+		}
+		return html5audio
+	}
+	else{
+		return {playclip:function(){throw new Error("Your browser doesn't support HTML5 audio unfortunately")}}
+	}
+}
+
+
+var mouseoversound44=createsoundbite("44.mp3")
+var mouseoversound43=createsoundbite("34.mp3")
+var mouseoversound42=createsoundbite("24.mp3")
+var mouseoversound41=createsoundbite("14.mp3")
+
+var mouseoversound34=createsoundbite("43.mp3")
+var mouseoversound33=createsoundbite("33.mp3")
+var mouseoversound32=createsoundbite("23.mp3")
+var mouseoversound31=createsoundbite("13.mp3")
+
+var mouseoversound24=createsoundbite("42.mp3")
+var mouseoversound23=createsoundbite("32.mp3")
+var mouseoversound22=createsoundbite("22.mp3")
+var mouseoversound21=createsoundbite("12.mp3")
+
+var mouseoversound14=createsoundbite("41.mp3")
+var mouseoversound13=createsoundbite("31.mp3")
+var mouseoversound12=createsoundbite("21.mp3")
+var mouseoversound11=createsoundbite("11.mp3")
+
+//var clicksound=createsoundbite("click.ogg", "click.mp3")
+var hit= createsoundbite("doh.mp3")
+
+var mt= createsoundbite("mt.mp3")
+
+
+
+   var intervalId = setInterval(function()  
+   					{
+                    var timeCounter = $("b[id=show-time]").html();
+                 
+                    if(timeCounter>=1)
+                    {
+                    	var updateTime = eval(timeCounter)- eval(1);
+                    	$("b[id=show-time]").html(updateTime);
+                    	//document.getElementById('blocker').style.display = 'none';
+                   		document.getElementById("blocker1").style.zIndex = "-5000000";
+                   		
+                    	
+					}
+                    
+                   if (timeCounter == 0)
+                    {
+                   		//alert(document.getElementsById('show-time').value); 
+                   		
+                   		//document.getElementById('blocker').style.display = 'block';
+                   		document.getElementById("blocker1").style.zIndex = "900000000000000000000000000";
+                   		
+                    }
+                
+                }, 1000);  
+                   
+
+    $(document).ready(function start() {
+        var random = -1;
+        
+        hitmole();
+ 
+
+        $("body").click(function (e) {
+            if (e.target.nodeName.toLowerCase() == "img") {
+                var scoreCounter = $("b[id='click-score']").html();
+                var updateScore = eval(scoreCounter) + eval(1);
+                $("b[id='click-score']").html(updateScore);
+ 
+            }
+            if ($(e.target).hasClass("sq-color")) {
+                if ($(e.target).hasClass("mole")) {
+                    // hit.playclip(); i dont knw wat method do here.
+                    $('.c' + random).removeClass('mole');
+ 					hit.playclip();
+                    var scoreCounter = $("b[id='show-score']").html();
+                    var updateScore = eval(scoreCounter) + eval(1);
+                    $("b[id='show-score']").html(updateScore);
+                
+                    hitmole();
+ 					
+
+                }
+                else {
+                    var scoreCounter = $("b[id='miss-score']").html();
+                    var updateScore = eval(scoreCounter) + eval(1);
+                    $("b[id='miss-score']").html(updateScore);
+                    if(eval('updateScore')==eval('3'))
+                    {	document.getElementById("blocker2").style.zIndex = "900000000000000000000000000";
+                     $("b[id=show-time]").html(0);
+                    }
+                 //   $("<div></div>").popupWindow({..options..}).click();
+                    //alert("MISS");
+                }
+            }
+            if ($(e.target).closest("div").hasClass("reset")) {
+                $("b[id='show-score']").html(0);
+                $("b[id='miss-score']").html(0);
+                $("b[id='click-score']").html(0);
+            }
+        });
+ 
+        function hitmole() 
+        {
+            var items = Array(11,12,13,14,21,22,23,24,31,32,33,34,41,42,43,44); //Initialize the array  
+ 			var items2 = items.slice();
+            random = items[Math.floor(Math.random() * items.length)];
+            //mole-at.playclip();
+            	
+           // if(items2==11)
+            //{
+            //setTimeout(function() 
+            //	{
+            //	mouseoversound11.playclip();
+			//	}, 1000);
+            //}
+            $('.c' + random).addClass('mole');
+            moleElement = new Audio('mt.mp3');  
+  			moleElement.play(); 
+  			if(eval('random')==eval('11')){
+  			//mouseoversound11.playclip();
+  			moleElement11 = new Audio('11loc.mp3');  
+  			moleElement11.play(); 
+  			}
+  			if(eval('random')==eval('12')){
+  			//mouseoversound12.playclip();
+  			moleElement12 = new Audio('21loc.mp3');  
+  			moleElement12.play(); 
+  			}
+  			if(eval('random')==eval('13')){
+  			//mouseoversound13.playclip();
+  			moleElement13 = new Audio('31loc.mp3');  
+  			moleElement13.play(); 
+  			}
+  			if(eval('random')==eval('14')){
+  			//mouseoversound14.playclip();
+  			moleElement14 = new Audio('41loc.mp3');  
+  			moleElement14.play(); 
+  			}
+  			if(eval('random')==eval('21')){
+  			//mouseoversound21.playclip();
+  			moleElement21 = new Audio('12loc.mp3');  
+  			moleElement21.play(); 
+  			}
+  			if(eval('random')==eval('22')){
+  			//mouseoversound22.playclip();
+  			moleElement22 = new Audio('22loc.mp3');  
+  			moleElement22.play(); 
+  			}
+  			if(eval('random')==eval('23')){
+  			//mouseoversound23.playclip();
+  			moleElement23 = new Audio('32loc.mp3');  
+  			moleElement23.play(); 
+  			}
+  			if(eval('random')==eval('24')){
+  			//mouseoversound24.playclip();
+  			moleElement24 = new Audio('42loc.mp3');  
+  			moleElement24.play(); 
+  			}
+  			
+  			if(eval('random')==eval('31')){
+  			//mouseoversound31.playclip();
+  			moleElement31 = new Audio('13loc.mp3');  
+  			moleElement31.play(); 
+  			}
+  			if(eval('random')==eval('32')){
+  			//mouseoversound32.playclip();
+  			moleElement32 = new Audio('23loc.mp3');  
+  			moleElement32.play(); 
+  			}
+  			if(eval('random')==eval('33')){
+  			//mouseoversound33.playclip();
+  			moleElement33 = new Audio('33loc.mp3');  
+  			moleElement33.play(); 
+  			}
+  			if(eval('random')==eval('34')){
+  			//mouseoversound34.playclip();
+  			moleElement34 = new Audio('43loc.mp3');  
+  			moleElement34.play(); 
+  			}
+  			if(eval('random')==eval('41')){
+  			//mouseoversound41.playclip();
+  			moleElement41 = new Audio('14loc.mp3');  
+  			moleElement41.play(); 
+  			}
+  			if(eval('random')==eval('42')){
+  			//mouseoversound42.playclip();
+  			moleElement42 = new Audio('24loc.mp3');  
+  			moleElement42.play(); 
+  			}
+  			if(eval('random')==eval('43')){
+  			//mouseoversound43.playclip();
+  			moleElement43 = new Audio('34loc.mp3');  
+  			moleElement43.play(); 
+  			}
+  			if(eval('random')==eval('44')){
+  			//mouseoversound44.playclip();
+  			moleElement44 = new Audio('44loc.mp3');  
+  			moleElement44.play(); 
+  			}
+           	
+        }
+ 
+
+    });
+
+
+
+
+
+
+
+</script>
+
+<!--End of the scripts-->
+
+<title>Auditory Whack a Mole</title>
+</head>
+
+<body>
+<!--Start of the game-->
+<div id="blocker1"><p style="position:relative; top:90px; left:130px; font-size:80px; font-family:arial;"><b>GAME</br>OVER</b></p></div>
+<div id="blocker2"><p style="position:relative; top:90px; left:130px; font-size:80px; font-family:arial;"><b>GAME</br>OVER</b></p></div>
+
+<div class="container">
+<div>
+<div class="score">Score:<b id="show-score">0</b></div>
+<div class="score">Miss:<b id="miss-score">0</b></div>
+<div id="pop-up" style="z-index:-100;position:relative;"></did>
+<div class="my-timer">
+       <b id="show-time">60</b> seconds        
+</div>
+</div>
+<div class="main-game-space">
+
+<div class="row">
+<div class="sq-color c44"  onmouseover="mouseoversound44.playclip()"></div>
+<div class="sq-color c43"  onmouseover="mouseoversound43.playclip()"></div>
+<div class="sq-color c42"  onmouseover="mouseoversound42.playclip()"></div>
+<div class="sq-color c41"  onmouseover="mouseoversound41.playclip()"></div>
+</div>
+
+<div class="row">
+<div class="sq-color c34"  onmouseover="mouseoversound34.playclip()"></div>
+<div class="sq-color c33"  onmouseover="mouseoversound33.playclip()"></div>
+<div class="sq-color c32"  onmouseover="mouseoversound32.playclip()"></div>
+<div class="sq-color c31"  onmouseover="mouseoversound31.playclip()"></div>
+</div>
+
+<div class="row">
+<div class="sq-color c24"  onmouseover="mouseoversound24.playclip()"></div>
+<div class="sq-color c23"  onmouseover="mouseoversound23.playclip()"></div>
+<div class="sq-color c22"  onmouseover="mouseoversound22.playclip()"></div>
+<div class="sq-color c21"  onmouseover="mouseoversound21.playclip()"></div>
+</div>
+
+<div class="row">
+<div class="sq-color c14"  onmouseover="mouseoversound14.playclip()"></div>
+<div class="sq-color c13"  onmouseover="mouseoversound13.playclip()"></div>
+<div class="sq-color c12"  onmouseover="mouseoversound12.playclip()" ></div>
+<div class="sq-color c11"  onmouseover="mouseoversound11.playclip()"></div>
+</div>
+
+
+</div>
+
+</div>
+
+<!--End of the game-->
+
+<button id="newgame">New Game</button>
+ 
+<script type="text/javascript">
+ 
+	$('#newgame').click(function() {
+ 
+    	      location.reload();
+ 
+	});
+ 
+</script>
+ 
+
+</body>
+
+</html>
